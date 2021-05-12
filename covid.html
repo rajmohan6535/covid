@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="https://i.ibb.co/xzfGDZh/letter-r-circle-logo-vector-23987-175-removebg-preview.png">
+
+  <title>Check Covid Vaccination availabilty checkiing</title>
+
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+  <link id="bsdp-css" href="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker3.min.css"
+    rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <style>
+    .center-lists.list-group {
+      flex-direction: row;
+      padding: 10;
+      border-radius: .25rem;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      justify-content: space-between;
+      align-items: stretch;
+    }
+
+    .features {
+      justify-content: space-around;
+    }
+
+    .tagify.form-control:read-only {
+      background-color: white;
+    }
+
+    .tagify {
+
+      --tag-bg: #4d90fe;
+      --tag-hover: #0a58ca;
+      --tag-text-color: white;
+    }
+
+    .select2-selection {
+      min-height: 40px !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+      border: 1px solid #ced4da;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      line-height: 38px;
+    }
+
+    .hide {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="bg-dark bg-gradient">
+
+  <main role="main" class="container">
+    <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded box-shadow">
+      <img class="mr-3 rounded box-shadow" src="https://i.ibb.co/S7HmfXW/letter-r-circle-logo-vector-23987-175.jpg"
+        alt="" width="48" height="48">
+      <div class="lh-100 ml-2" style="margin-left: 10px;">
+        <h6 class="mb-0 text-white lh-100"> Covid19 - Notify Vaccine Availability</h6>
+        <small> Developed by <a class="text-warning" href="https://www.facebook.com/rajmohan6535/" target="_blank">Raj
+            Mohan</a></small>
+      </div>
+    </div>
+
+    <div class="my-3 p-3 bg-white rounded box-shadow">
+      <h6 class="border-bottom border-gray pb-2 mb-0">FIND VACCINE AVAILABILITY</h6>
+      <form action="#">
+
+        <div class="row mt-3 clearfix">
+          <div class="col-md-4 col-sm-12">
+            <label for="">STATE</label>
+            <select name="state_id" id="state" class="form-control">
+
+            </select>
+          </div>
+
+          <div class="col-md-4 col-sm-12">
+            <label for="">DISTRICT</label>
+            <select name="district_id" id="district" class="form-control">
+
+            </select>
+          </div>
+
+          <div class="col-md-4 col-sm-12">
+            <label for="">DATE</label>
+            <input type="text" name="date" value="" class="form-control" placeholder="dd-mm-yyyy">
+          </div>
+
+
+          <div class="col-md-12 col-sm-12 mt-3 clearfix">
+            <label for="">Hospitals</label>
+            <select name="hospital" id="hospital" class="form-control" multiple>
+
+            </select>
+          </div>
+
+          <div class="col-md-12 mt-3">
+            <label for="">Ages: </label>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="age" id="inlineRadio1" value="18">
+              <label class="form-check-label" for="inlineRadio1">18+</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="age" id="inlineRadio2" value="45">
+              <label class="form-check-label" for="inlineRadio2">45+</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="age" id="inlineRadio3" value="" checked>
+              <label class="form-check-label" for="inlineRadio3">Both</label>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 d-md-block mb-4">
+            <button class="btn btn-primary" type="button" onclick="checkAvailableSlots();">
+              SEARCH
+            </button>
+            <button class="btn btn-secondary" type="button" id="toogle_intervals" data-auto-call="true">
+              Stop
+            </button>
+          </div>
+
+          <div class="d-grid d-md-block mb-2">
+            <button class="btn btn-info" type="button" id="enable_notification" onclick="askNotificationPermission();">
+              ENABLE NOTIFICATOION
+            </button>
+
+          </div>
+
+      </form>
+    </div>
+
+    <div id="message">
+
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4" id="result_wrapper">
+
+    </div>
+
+    <div class="row mt-5 loader">
+      <div class="col-12 text-center">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
+    </div>
+  </main>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+  <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+    integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+    crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.min.js"></script>
+  <script src="https://unpkg.com/bootstrap-datepicker@1.9.0/dist/locales/bootstrap-datepicker.en-GB.min.js"
+    charset="UTF-8"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <script defer>
+
+    let API_ENDPOINT = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict";
+    let STATE_API_ENDPOINT = "https://cdn-api.co-vin.in/api/v2/admin/location/states";
+    let DISTRICT_API_ENDPOINT = " https://cdn-api.co-vin.in/api/v2/admin/location/districts";
+    let CHECK_AVAILABILITY_PINCODES = [688523, 688524, 688525, 688527, 688528, 688529, 688532, 688534, 688535, 688536, 688541, 688582];
+    let DISTRICT_CODE = 301;
+    let DATE = moment().format("DD-MM-YYYY");
+    let INTERVALS = 20000 // 20 sec
+    let RECENT_RESULT;
+
+    let DISTRICTS = {
+
+    };
+
+    $('form input[name="date"]').val(`${DATE}`);
+
+    $('form input[name="date"]').datepicker({
+      format: "dd-mm-yyyy",
+      minDate: moment().subtract(1, 'd').format("DD-MM-YYYY")
+    });
+
+    let hospital_filters = [];
+
+
+    function checkAvailableSlots() {
+      $('.loader').removeClass('hide');
+      stopIntervals();
+      CHECK_AVAILABILITY_PINCODES = String($('#hospital').val()).split(',').map(function (zip_code) {
+        return zip_code && parseInt(zip_code) > 0 ? parseInt(zip_code) : null;
+      }).filter(function (el) {
+        return el != null && el !== NaN && el !== undefined;
+      });
+
+      $('#message').empty();
+
+      if (!$('#district').val()) {
+        return;
+      }
+
+      let hospitals = [];
+      // fetch slots
+      $.ajax({
+        type: "GET",
+        url: `${API_ENDPOINT}?district_id=${$('#district').val()}&date=${$('form input[name="date"]').val()}`,
+        success: function (response) {
+          $('.loader').addClass('hide');
+          RECENT_RESULT = response;
+          $('#result_wrapper').empty();
+          $.each(response.centers, function (index, center) {
+            hospitals.push({
+              id: center.pincode,
+              text: `${center.name}, ${center.district_name} - ${center.pincode}`
+            })
+          });
+
+          displayResults(response);
+          if (hospitals != hospital_filters) {
+            hospital_filters = hospitals;
+            $('#hospital').select2({
+              allowClear: true,
+              data: hospital_filters,
+              tags: true
+            })
+          }
+
+          if (!$('#result_wrapper').children().length) {
+            $('#result_wrapper').html(`<li class="list-group-item d-flex col-4">
+          <div class="ms-2 me-auto">
+            <div class="fw-bold">No Vaccination center found</div>
+          </div>
+
+        </li>`);
+          }
+        },
+        error: (error) => {
+          $('.loader').addClass('hide');
+          $('#result_wrapper').empty().html(`Error: ${error.responseText}<br>\nSearch will be resumed automatically or you can start manually by clicking start button`);
+          console.log(error.responseText);
+
+          stopIntervals();
+          setTimeout(function () {
+            startIntervals();
+          }, INTERVALS * 2);
+
+        }
+      });
+
+      startIntervals();
+    };
+
+    function displayResults(response) {
+      $.each(response.centers, function (index, center) {
+
+        if ($.inArray(center.pincode, CHECK_AVAILABILITY_PINCODES) != -1 || CHECK_AVAILABILITY_PINCODES.length === 0) {
+
+          if (center.sessions) {
+            $.each(center.sessions, (indx, session) => {
+              center.session = session;
+              if (center.session.available_capacity) {
+                return;
+              }
+            })
+
+          }
+
+          if (!(center.session.min_age_limit == $('input[name="age"]:checked').val() || $('input[name="age"]:checked').val() == "both" || !$('input[name="age"]:checked').val())) {
+            return;
+          }
+
+          if (center.session && center.session.available_capacity) {
+            $('#result_wrapper').prepend(getResultHtml(center));
+          } else {
+            $('#result_wrapper').append(getResultHtml(center));
+          }
+
+          if (center.session && center.session.available_capacity) {
+            $('#message').append(`<div class="alert alert-success" role="alert">
+  Slot availale on  <div class="fw-bold">${center.name}, <small class="text-muted">${center.district_name} - ${center.pincode}</small></div>
+                  ${center.address}
+                  </div>
+</div>`);
+
+            Notification.requestPermission().then(function (permission) {
+              var notification = new Notification(`Slot Available @${center.district_name}`, {
+                body: `Name: ${center.name}, ${center.district_name} - ${center.pincode}, \nSlots: ${center.session.available_capacity}`,
+                icon: "https://i.ibb.co/xzfGDZh/letter-r-circle-logo-vector-23987-175-removebg-preview.png",
+                vibrate: true
+              });
+
+
+
+              notification.onclick = function () {
+                window.focus();
+              };
+
+              notification.onshow = function () {
+                const audio = new Audio("https://notificationsounds.com//storage/sounds/file-sounds-1151-swiftly.mp3");
+                audio.play();
+              };
+
+            });
+
+
+            window.focus();
+
+          }
+        }
+      });
+
+    }
+
+    function getResultHtml(center) {
+      return `
+      <div class="col">
+        <div class="card bg-${center.session && center.session.available_capacity ? "success text-white" : "light"} bg-gradient shadow-sm rounded">
+          <div class="card-header">${center.name}
+            <div class="float-end">
+              <span class="badge bg-${center.fee_type !== "Free" ? "danger" : "light text-success"} bg-gradient">${center.fee_type}</span>
+              <span class="badge bg-${getSlotColorShade(center.session.available_capacity)} text-light bg-gradient">SLOTS: ${center.session.available_capacity}</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="card-text text-wrap">
+              <span class="badge bg-light text-dark ${center.session && center.session.available_capacity ? "" : "p-0 m-0"} text-wrap">${center.address}, ${center.district_name}, ${center.state_name} - ${center.pincode}</span>
+            </p>
+
+            <span class="row">
+              <div class="col">
+                <small>Vaccine:</small>
+                <span class="badge bg-light ${center.session.vaccine !== "COVISHIELD" ? "text-primary" : "text-dark"}  bg-gradient">${center.session.vaccine}</span>
+              </div>
+
+              <div class="col">
+                <small>Age:</small>
+                <span class="badge bg-${center.session.min_age_limit !== 45 ? "danger" : "dark"} bg-gradient">${center.session.min_age_limit}+</span>
+              </div>
+            </span>
+
+          </div>
+        </div>
+      </div>
+`;
+    }
+
+    function getSlotColorShade(slot) {
+      if (slot > 0 && slot <= 10)
+        return 'danger';
+      else if (slot > 10 && slot <= 15)
+        return 'warning';
+      else if (slot > 15)
+        return 'success';
+      else
+        return "secondary";
+    }
+
+    var new_intervals = [];
+
+    function stopIntervals() {
+      if (new_intervals) {
+        new_intervals.forEach(internval => {
+          clearInterval(internval);
+        });
+        new_intervals = [];
+      }
+
+      $('#toogle_intervals').data('auto-call', false)
+        .removeClass('btn-danger')
+        .addClass('btn-success').html("START");
+    }
+
+    function startIntervals() {
+      if (new_intervals) {
+        new_intervals.forEach(internval => {
+          clearInterval(internval);
+        });
+        new_intervals = [];
+      }
+
+      new_intervals.push(setInterval(function () {
+        checkAvailableSlots();
+      }, INTERVALS));
+
+      $('#toogle_intervals').data('auto-call', true)
+        .addClass('btn-danger')
+        .removeClass('btn-success').html("STOP");
+    }
+
+    $('#toogle_intervals').click(function () {
+      if (new_intervals) {
+        new_intervals.forEach(internval => {
+          clearInterval(internval);
+        });
+        new_intervals = [];
+      };
+
+      if ($(this).data('auto-call')) {
+        stopIntervals();
+      } else {
+        startIntervals();
+      }
+    });
+    $('select[name="state_id"], select[name="district_id"]').select2({
+      allowClear: true,
+    });
+
+    $('select[name="state_id"]').attr('disabled', true);
+    $('select[name="district_id"]').attr('disabled', true);
+
+    $.ajax({
+      type: "GET",
+      url: `${STATE_API_ENDPOINT}`,
+      success: function (response) {
+        $('select[name="state_id"]').empty().select2('destroy');
+        if (response.states) {
+          let dataset = response.states.map(function (state) {
+            return {
+              id: state.state_id,
+              text: state.state_name,
+              selected: state.state_name === "Kerala" || state.state_id === 17
+            };
+          });
+
+          $('select[name="state_id"]').select2({
+            data: dataset,
+            allowClear: false,
+          }).trigger('change');
+
+          $('select[name="state_id"]').removeAttr('disabled');
+        }
+      }
+    });
+
+    $('select[name="state_id"]').change();
+
+    $('select[name="state_id"]').change(function () {
+      $('select[name="district_id"]').attr('disabled', true);
+      $.ajax({
+        type: "GET",
+        url: `${DISTRICT_API_ENDPOINT}/${this.value}`,
+        success: function (response) {
+          $('select[name="district_id"]').empty().select2('destroy');
+          $('select[name="district_id"]').attr('disabled', false);
+          if (response.districts) {
+            let dataset = response.districts.map(function (district) {
+              return {
+                id: district.district_id,
+                text: district.district_name
+              };
+            });
+
+            $('select[name="district_id"]').select2({
+              data: dataset
+            });
+
+            checkAvailableSlots();
+          }
+        }
+      });
+    });
+
+    $('select[name="district_id"]').select2({
+      allowClear: true
+    });
+
+    $('select[name="district_id"]').change(function () {
+      if (this.value) {
+        checkAvailableSlots();
+      }
+      $('#hospital').empty().select2({ allowClear: true });
+    });
+
+
+
+    function askNotificationPermission() {
+      // function to actually ask the permissions
+
+      // Let's check if the browser supports notifications
+      if (!('Notification' in window)) {
+        console.log("This browser does not support notifications.");
+      } else {
+        if (checkNotificationPromise()) {
+          Notification.requestPermission()
+            .then((permission) => {
+              handlePermission(permission);
+            })
+        } else {
+          Notification.requestPermission(function (permission) {
+            handlePermission(permission);
+          });
+        }
+      }
+    }
+
+    function handlePermission(permission) {
+      try {
+        let notificationBtn = document.getElementById('enable_notification')
+        // set the button to shown or hidden, depending on what the user answers
+        if (Notification.permission === 'denied' || Notification.permission === 'default') {
+          notificationBtn.style.display = 'block';
+        } else {
+          notificationBtn.style.display = 'none';
+        }
+      } catch (e) {
+
+      }
+    }
+
+    function checkNotificationPromise() {
+      try {
+        Notification.requestPermission().then();
+      } catch (e) {
+        return false;
+      }
+
+      return true;
+    }
+
+    handlePermission();
+
+    setTimeout(function () {
+      $('body div').first().remove();
+    }, 1500)
+
+  </script>
+</body>
+
+</html>
